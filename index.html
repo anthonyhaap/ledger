@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#F5EFE3" />
+<title>Ledger — Weekly Sales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=Geist:wght@300..600&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<!-- ===== Setup screen (first load) ===== -->
+<section id="setup-screen" class="screen hidden">
+  <div class="screen-card">
+    <div class="screen-mark">L</div>
+    <h1 class="screen-title">Connect <em>Firebase</em></h1>
+    <p class="screen-sub">One-time setup per device. Paste the config object from your Firebase project — we'll save it locally.</p>
+    <textarea id="setup-input" spellcheck="false" placeholder="{
+  apiKey: &quot;...&quot;,
+  authDomain: &quot;...&quot;,
+  projectId: &quot;...&quot;,
+  ...
+}"></textarea>
+    <div class="screen-error" id="setup-error"></div>
+    <button id="setup-save" class="btn btn-primary btn-block">Save &amp; continue</button>
+    <p class="screen-help">Find this at console.firebase.google.com → Project settings → Your apps → SDK setup &amp; configuration.</p>
+  </div>
+</section>
+
+<!-- ===== Loading ===== -->
+<section id="loading" class="loading hidden">
+  <div class="spin"></div>
+</section>
+
+<!-- ===== App ===== -->
+<div id="app" class="hidden">
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">L</div>
+        <div class="brand-text">
+          <span class="brand-name">Ledger</span>
+          <span class="brand-sub">Anthony &amp; Morgan</span>
+        </div>
+      </div>
+      <nav class="tabs" role="tablist">
+        <button class="tab is-active" data-view="weekly">Weekly</button>
+        <button class="tab" data-view="totals">Totals</button>
+      </nav>
+      <div class="topnav">
+        <span class="sync" id="sync" title="Synced">●</span>
+        <button class="iconbtn" id="open-settings" title="Settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Weekly view ===== -->
+  <section class="view view-weekly" data-view="weekly">
+
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="stat stat-lg">
+          <span class="stat-label">This week — net</span>
+          <span class="stat-value" id="hero-week-net">$0</span>
+          <span class="stat-meta" id="hero-week-meta">$0 sales · $0 spent</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">This month — net</span>
+          <span class="stat-value" id="hero-month-net">$0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Year to date</span>
+          <span class="stat-value" id="hero-ytd-net">$0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">All-time net</span>
+          <span class="stat-value" id="hero-all-net">$0</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div class="toolbar-row">
+        <select id="filter-year" class="sel"><option value="">All years</option></select>
+        <div class="grow"></div>
+        <button class="btn btn-primary" id="btn-add-week">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          <span>Add week</span>
+        </button>
+      </div>
+    </section>
+
+    <main class="ledger-wrap">
+
+      <div class="ledger-table" role="table">
+        <div class="ledger-head">
+          <div class="th th-week">Week</div>
+          <div class="th th-num">Poshmark</div>
+          <div class="th th-num">eBay</div>
+          <div class="th th-num">Facebook</div>
+          <div class="th th-num">Other</div>
+          <div class="th th-num th-sep">Sales</div>
+          <div class="th th-num">Overhead</div>
+          <div class="th th-num">Net</div>
+          <div class="th th-actions"></div>
+        </div>
+
+        <div id="rows" class="ledger-rows"></div>
+
+        <div class="ledger-foot" id="footer-totals">
+          <div class="tf tf-week">Totals — visible</div>
+          <div class="tf tf-num" data-tot="poshmark">$0</div>
+          <div class="tf tf-num" data-tot="ebay">$0</div>
+          <div class="tf tf-num" data-tot="facebook">$0</div>
+          <div class="tf tf-num" data-tot="other">$0</div>
+          <div class="tf tf-num tf-sep" data-tot="sales">$0</div>
+          <div class="tf tf-num" data-tot="overhead">$0</div>
+          <div class="tf tf-num" data-tot="net">$0</div>
+          <div class="tf tf-actions"></div>
+        </div>
+      </div>
+
+      <div id="empty" class="empty hidden">
+        <div class="empty-mark">∅</div>
+        <p>No weeks yet. Click <strong>Add week</strong> to start tracking.</p>
+      </div>
+
+    </main>
+  </section>
+
+  <!-- ===== Totals view ===== -->
+  <section class="view view-totals hidden" data-view="totals">
+
+    <section class="hero">
+      <div class="hero-grid hero-grid-totals">
+        <div class="stat stat-lg">
+          <span class="stat-label">All-time gross sales</span>
+          <span class="stat-value" id="t-gross">$0</span>
+          <span class="stat-meta" id="t-weeks-meta">0 weeks tracked</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">All-time overhead</span>
+          <span class="stat-value" id="t-overhead">$0</span>
+        </div>
+        <div class="stat stat-accent">
+          <span class="stat-label">All-time net</span>
+          <span class="stat-value" id="t-net">$0</span>
+          <span class="stat-meta" id="t-margin">0% margin</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="totals-body">
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Sales by platform</h2>
+          <span class="hint">All-time</span>
+        </div>
+        <div class="bars" id="platform-bars"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Weekly performance</h2>
+          <div class="card-controls">
+            <select id="chart-range" class="sel">
+              <option value="8">Last 8 weeks</option>
+              <option value="13" selected>Last 13 weeks</option>
+              <option value="26">Last 26 weeks</option>
+              <option value="52">Last 52 weeks</option>
+              <option value="0">All time</option>
+            </select>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="weekly-chart"></canvas></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Year breakdown</h2></div>
+        <div class="year-table" id="year-table"></div>
+      </div>
+
+    </section>
+  </section>
+
+</div>
+
+<!-- ===== Add Week Modal ===== -->
+<div class="modal hidden" id="modal-add">
+  <div class="modal-card">
+    <header class="modal-head">
+      <h2>Add a week</h2>
+      <button class="modal-close" data-close>×</button>
+    </header>
+    <form id="form-add" class="form">
+      <label class="field field-full">
+        <span>Week starting (Monday)</span>
+        <input name="weekStart" type="date" required />
+      </label>
+      <label class="field"><span>Poshmark</span><input name="poshmark" type="number" step="0.01" inputmode="decimal" placeholder="0.00" /></label>
+      <label class="field"><span>eBay</span><input name="ebay" type="number" step="0.01" inputmode="decimal" placeholder="0.00" /></label>
+      <label class="field"><span>Facebook Marketplace</span><input name="facebook" type="number" step="0.01" inputmode="decimal" placeholder="0.00" /></label>
+      <label class="field"><span>Other</span><input name="other" type="number" step="0.01" inputmode="decimal" placeholder="0.00" /></label>
+      <label class="field field-full"><span>Overhead (total spent)</span><input name="overhead" type="number" step="0.01" inputmode="decimal" placeholder="0.00" /></label>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+        <button type="submit" class="btn btn-primary">Save week</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== Settings Modal ===== -->
+<div class="modal hidden" id="modal-settings">
+  <div class="modal-card">
+    <header class="modal-head">
+      <h2>Settings</h2>
+      <button class="modal-close" data-close>×</button>
+    </header>
+    <div class="modal-body">
+      <section class="settings-block">
+        <h3>Export</h3>
+        <p class="hint">Download all weekly data as a CSV file.</p>
+        <button class="btn btn-secondary" id="btn-export">Export CSV</button>
+      </section>
+      <section class="settings-block danger">
+        <h3>Device</h3>
+        <p class="hint">Forget Firebase config on this device — you'll need to enter it again.</p>
+        <button class="btn btn-ghost" id="reset-config">Reset Firebase config</button>
+      </section>
+      <section class="settings-block">
+        <h3>About</h3>
+        <p class="hint">Edits sync in real time across devices via Firebase. Click any cell in the weekly table to edit it — changes save automatically.</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Confirm Modal ===== -->
+<div class="modal hidden" id="modal-confirm">
+  <div class="modal-card modal-sm">
+    <header class="modal-head">
+      <h2 id="confirm-title">Are you sure?</h2>
+    </header>
+    <div class="modal-body">
+      <p id="confirm-body" class="confirm-body"></p>
+    </div>
+    <div class="form-actions form-actions-padded">
+      <button class="btn btn-ghost" data-close>Cancel</button>
+      <button class="btn btn-danger" id="confirm-ok">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
