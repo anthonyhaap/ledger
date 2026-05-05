@@ -109,9 +109,9 @@ function bindUI(){
   $("#btn-add-week").addEventListener("click", openAddWeek);
   $("#form-add").addEventListener("submit", handleAddWeek);
   $("#open-settings").addEventListener("click", () => openModal("modal-settings"));
-  $("#reset-config").addEventListener("click", resetConfig);
   $("#btn-export").addEventListener("click", exportCSV);
   $("#chart-range").addEventListener("change", () => renderTotals());
+}
 
   $$(".modal").forEach(m => {
     m.addEventListener("click", e => {
@@ -599,7 +599,6 @@ function renderYearTable(){
 }
 
 /* ---------- settings actions ---------- */
-function resetConfig(){
   // Config is hardcoded; this is a no-op.
 }
 
