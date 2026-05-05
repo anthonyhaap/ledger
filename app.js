@@ -9,6 +9,17 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 const CFG_KEY = "ledger.firebaseConfig.v1";
+
+// Hardcoded Firebase config
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDeBvodJezjkmOaoMFDYb8koVmp25G9FvI",
+  authDomain: "reselling-project-18900.firebaseapp.com",
+  projectId: "reselling-project-18900",
+  storageBucket: "reselling-project-18900.firebasestorage.app",
+  messagingSenderId: "233811267101",
+  appId: "1:233811267101:web:e55ce8af3d43266dee00f4",
+  measurementId: "G-EFB9PBGHJB"
+};
 const COLLECTION = "weeks";
 const PLATFORMS = ["poshmark", "ebay", "facebook", "other"];
 const PLATFORM_LABELS = { poshmark: "Poshmark", ebay: "eBay", facebook: "Facebook", other: "Other" };
@@ -29,9 +40,7 @@ const state = {
 
 /* ---------- boot ---------- */
 (function boot(){
-  const cfg = loadConfig();
-  if (!cfg){ showSetup(); return; }
-  startApp(cfg);
+  startApp(FIREBASE_CONFIG);
 })();
 
 function showSetup(){
@@ -591,10 +600,7 @@ function renderYearTable(){
 
 /* ---------- settings actions ---------- */
 function resetConfig(){
-  if (!confirm("Forget Firebase config on this device? You'll need to paste it again to use the app.")) return;
-  localStorage.removeItem(CFG_KEY);
-  if (state.unsub) state.unsub();
-  location.reload();
+  // Config is hardcoded; this is a no-op.
 }
 
 function exportCSV(){
