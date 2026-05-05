@@ -111,6 +111,7 @@ function bindUI(){
   $("#open-settings").addEventListener("click", () => openModal("modal-settings"));
   $("#btn-export").addEventListener("click", exportCSV);
   $("#chart-range").addEventListener("change", () => renderTotals());
+}
 
   $$(".modal").forEach(m => {
     m.addEventListener("click", e => {
