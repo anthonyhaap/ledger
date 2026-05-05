@@ -41,7 +41,7 @@ const state = {
 
 /* ---------- boot ---------- */
 (function boot(){
-  startApp(FIREBASE_CONFIG);
+  startApp(firebaseConfig);
 })();
 
 function showSetup(){
