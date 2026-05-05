@@ -11,14 +11,15 @@ import {
 const CFG_KEY = "ledger.firebaseConfig.v1";
 
 // Hardcoded Firebase config
-const FIREBASE_CONFIG = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-  measurementId: process.env.FIREBASE_MEASUREMENT_ID
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDeBvodJezjkmOaoMFDYb8koVmp25G9FvI",
+  authDomain: "reselling-project-18900.firebaseapp.com",
+  projectId: "reselling-project-18900",
+  storageBucket: "reselling-project-18900.firebasestorage.app",
+  messagingSenderId: "233811267101",
+  appId: "1:233811267101:web:e55ce8af3d43266dee00f4",
+  measurementId: "G-EFB9PBGHJB"
 };
 const COLLECTION = "weeks";
 const PLATFORMS = ["poshmark", "ebay", "facebook", "other"];
