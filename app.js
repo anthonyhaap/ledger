@@ -111,8 +111,6 @@ function bindUI(){
   $("#open-settings").addEventListener("click", () => openModal("modal-settings"));
   $("#btn-export").addEventListener("click", exportCSV);
   $("#chart-range").addEventListener("change", () => renderTotals());
-}
-
   $$(".modal").forEach(m => {
     m.addEventListener("click", e => {
       if (e.target === m || e.target.matches("[data-close]") || e.target.closest("[data-close]")){
@@ -599,8 +597,6 @@ function renderYearTable(){
 }
 
 /* ---------- settings actions ---------- */
-  // Config is hardcoded; this is a no-op.
-}
 
 function exportCSV(){
   if (state.weeks.length === 0){ flashToast("Nothing to export"); return; }
